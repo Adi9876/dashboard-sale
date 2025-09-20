@@ -1,0 +1,110 @@
+
+== Logs ==
+  PublicSale deployed at: 0xa5837E0A34dE321c91BA38643786C75B15f01fF9
+  Mock BNB/USD Feed: 0x39743dA649683C1cFaf3dA8641545Fb7a1B1157e
+  Mock USDT: 0xb13C4A99E163a36B23f8D144183FDEC5D058396F
+  Mock USDC: 0x618a22Df87a05c5ff99f215700eFAB6192615CA4
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 97
+
+Estimated gas price: 1 gwei
+
+Estimated total gas used for script: 13304684
+
+Estimated amount required: 0.013304684 BNB
+
+==========================
+
+##### bsc-testnet
+✅  [Success] Hash: 0x253fc402a57b07f9bd9246f72458619238a602887dbfb3435433812a7fc296bd
+Contract Address: 0x618a22Df87a05c5ff99f215700eFAB6192615CA4
+Block: 66051129
+Paid: 0.000433589 ETH (433589 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0xcc8b1afab7fe85d5c7821fb218341b2a93120ad62fcebaa094242f06c4a4370c
+Contract Address: 0xb13C4A99E163a36B23f8D144183FDEC5D058396F
+Block: 66051129
+Paid: 0.000433589 ETH (433589 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0xa586209f0ed8726ab517a3bf21ac684b3e293422a29ee0f12acb35d72bb6a498
+Contract Address: 0x39743dA649683C1cFaf3dA8641545Fb7a1B1157e
+Block: 66051129
+Paid: 0.000252368 ETH (252368 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0x081388ac2032bd799ef46352a2ad7264af18f96d8d27e260aa1dbbb4f4b08238
+Contract Address: 0xf20Ed31fe4DE0cA882C1cb87a6987b8bAD9bDd48
+Block: 66051131
+Paid: 0.002769837 ETH (2769837 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0x478699bfb5e285c27cebbc005579d127a2570670aa9382ddd72d6304fb60761f
+Block: 66051131
+Paid: 0.000052953 ETH (52953 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0xd11db58ff1516766e53da7e1405cf974e50341cc7c4690735ebe8e39abc56bf7
+Contract Address: 0x1e3Fe9106359cc795b11C1fCE437BE15DD40b2E9
+Block: 66051131
+Paid: 0.00271313 ETH (2713130 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0x35fe72521dfe025c379769aae7cc4cf6eac577f445f199f539cf381ef8669783
+Contract Address: 0xa5837E0A34dE321c91BA38643786C75B15f01fF9
+Block: 66051131
+Paid: 0.000446314 ETH (446314 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0xb68b5ad2b2f40281d5e5a4faa4fc2606338a9224a3cd8263aae071df7731c4db
+Block: 66051131
+Paid: 0.000028552 ETH (28552 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0x3e5352d49f75bcf37f9d67d7a661318d930f709642350f48a541325d47e9cd30
+Block: 66051131
+Paid: 0.000056274 ETH (56274 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0x1382c011b678bdd1d043bad5dd4678828d1ab8830ebb455e9aecfdd004b2da6c
+Block: 66051131
+Paid: 0.000052953 ETH (52953 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0x44be9b363ee6c7e8d67eac3247e742df6566235932e0001b90e5c91c7dce5f8e
+Block: 66051131
+Paid: 0.000063263 ETH (63263 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0x729cbac19b16b740b9b3e809d513696fc2668baca955c024cb77c0dfd330cd79
+Block: 66051131
+Paid: 0.00005193 ETH (51930 gas * 1 gwei)
+
+
+##### bsc-testnet
+✅  [Success] Hash: 0x1540cabb0f3b30a0031dbc11cc36fdf3a9e513ff70eb4cba5fe7e6b27ae291c6
+Block: 66051131
+Paid: 0.002530778 ETH (2530778 gas * 1 gwei)
+
+✅ Sequence #1 on bsc-testnet | Total Paid: 0.00988553 ETH (9885530 gas * avg 1 gwei)
+                                                                                                                                                                        
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
