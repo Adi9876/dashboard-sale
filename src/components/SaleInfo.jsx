@@ -141,7 +141,7 @@ const SaleInfo = () => {
             className="progress-fill"
             style={{
               width: `${(parseFloat(saleData.totalSold) /
-                  parseFloat(saleData.presaleCap)) *
+                parseFloat(saleData.presaleCap)) *
                 100
                 }%`,
             }}

@@ -14,10 +14,11 @@ A React frontend application for interacting with the RCX Public Sale smart cont
 ## Contract Information
 
 - **Network**: BSC Testnet (Chain ID: 97)
-- **PublicSale Contract**: `0xa5837E0A34dE321c91BA38643786C75B15f01fF9`
-- **USDT Contract**: `0xb13C4A99E163a36B23f8D144183FDEC5D058396F`
-- **USDC Contract**: `0x618a22Df87a05c5ff99f215700eFAB6192615CA4`
-- **BNB/USD Price Feed**: `0x39743dA649683C1cFaf3dA8641545Fb7a1B1157e`
+PublicSale: 0x7500C02683Cf7980e6777F3D75cbD8a406638bb9
+Mock USDT: 0x2d86ce52565D26885DFda58b65Ff1f792DB1f3C7
+Mock USDC: 0xe63926e78549d31E1958cA425794434109d7a4C1
+Mock BNB/USD Feed: 0x1Ffc8ae2AF2bB1637F838D6e5F6C6b770E0F640f
+
 
 ## Installation
 
