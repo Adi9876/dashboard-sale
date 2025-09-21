@@ -181,6 +181,11 @@
 	},
 	{
 		"inputs": [],
+		"name": "PublicSale__SaleNotStarted",
+		"type": "error"
+	},
+	{
+		"inputs": [],
 		"name": "PublicSale__TransferFailed",
 		"type": "error"
 	},
@@ -330,7 +335,7 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "usd6",
+				"name": "usd18",
 				"type": "uint256"
 			}
 		],
@@ -537,7 +542,7 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "priceUsd6",
+				"name": "priceUsd18",
 				"type": "uint256"
 			},
 			{
@@ -717,7 +722,7 @@
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "totalCostUsd6",
+				"name": "totalCostUsd18",
 				"type": "uint256"
 			},
 			{
@@ -792,7 +797,7 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "priceUsd6",
+				"name": "priceUsd18",
 				"type": "uint256"
 			},
 			{
@@ -956,7 +961,7 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "_tokenPriceUsd6",
+				"name": "_tokenPriceUsd18",
 				"type": "uint256"
 			},
 			{
@@ -979,7 +984,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256[]",
-				"name": "_pricesUsd6",
+				"name": "_pricesUsd18",
 				"type": "uint256[]"
 			},
 			{
@@ -1251,11 +1256,11 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "usd6",
+				"name": "usd18",
 				"type": "uint256"
 			}
 		],
-		"name": "setTokenPriceUsd6",
+		"name": "setTokenPriceUsd18",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -1272,7 +1277,7 @@
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "priceUsd6",
+				"name": "priceUsd18",
 				"type": "uint256"
 			},
 			{
@@ -1337,7 +1342,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "tokenPriceUsd6",
+		"name": "tokenPriceUsd18",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -1433,7 +1438,7 @@
 				"type": "uint256"
 			}
 		],
-		"name": "usdCost6",
+		"name": "usdCost18",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -1448,7 +1453,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "usdAmount6",
+				"name": "usdAmount18",
 				"type": "uint256"
 			}
 		],

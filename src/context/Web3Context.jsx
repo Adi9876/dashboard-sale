@@ -13,15 +13,21 @@ export const useWeb3 = () => {
 };
 
 // Contract addresses from new deployment
-const CONTRACT_ADDRESSES = {
-  PublicSale: "0x8Da0db6e62E487B025316bc213960Bbc44E6D226",
-  USDT: "0xe3c6dFb9c9A031aA57b53Decab631c2665163Ae2",
-  USDC: "0x5AC5c304F2759F7b5713Ee8326Bc88029458C750",
-  BNB_USD_FEED: "0x8168b5Bc0c5023Ed5fcc4B8Ca036b648f8b39084",
-};
+// const CONTRACT_ADDRESSES = {
+//   PublicSale: "0x8Da0db6e62E487B025316bc213960Bbc44E6D226",
+//   USDT: "0xe3c6dFb9c9A031aA57b53Decab631c2665163Ae2",
+//   USDC: "0x5AC5c304F2759F7b5713Ee8326Bc88029458C750",
+//   BNB_USD_FEED: "0x8168b5Bc0c5023Ed5fcc4B8Ca036b648f8b39084",
+// };
 
+const CONTRACT_ADDRESSES = {
+  PublicSale: "0x403992b84E0D2079FBC468E7CdF9c0a52Caa82e4",
+  USDT: "0xD0B69C04A833541003f2570575a7474f36A70a81",
+  USDC: "0xa94BB5383e74535734354948E134A422653Dcf86",
+  BNB_USD_FEED: "0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526",
+};
 // Owner address for contract control
-const OWNER_ADDRESS = "0xbA..."; // Replace with actual owner address
+const OWNER_ADDRESS = "0xbA391F0B052Eacdc3Bf9a2ee1ebD091f8f9c3828"; // Replace with actual owner address
 
 // Contract ABI (simplified version of the full ABI)
 const PUBLIC_SALE_ABI = [
