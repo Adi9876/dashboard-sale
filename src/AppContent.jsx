@@ -6,6 +6,7 @@ import PurchaseForm from "./components/PurchaseForm";
 import StageInfo from "./components/StageInfo";
 import WalletInfo from "./components/WalletInfo";
 import DebugInfo from "./components/DebugInfo";
+import OwnerControls from "./components/OwnerControls";
 
 function AppContent() {
     const { isConnected, account } = useWeb3();
@@ -17,6 +18,7 @@ function AppContent() {
                 <div className="container">
                     <div className="grid">
                         <div className="left-panel">
+                            <OwnerControls />
                             <SaleInfo />
                             <StageInfo />
                             <DebugInfo />

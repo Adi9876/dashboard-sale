@@ -14,11 +14,14 @@ export const useWeb3 = () => {
 
 // Contract addresses from new deployment
 const CONTRACT_ADDRESSES = {
-  PublicSale: "0x7500C02683Cf7980e6777F3D75cbD8a406638bb9",
-  USDT: "0x2d86ce52565D26885DFda58b65Ff1f792DB1f3C7",
-  USDC: "0xe63926e78549d31E1958cA425794434109d7a4C1",
-  BNB_USD_FEED: "0x1Ffc8ae2AF2bB1637F838D6e5F6C6b770E0F640f",
+  PublicSale: "0x8Da0db6e62E487B025316bc213960Bbc44E6D226",
+  USDT: "0xe3c6dFb9c9A031aA57b53Decab631c2665163Ae2",
+  USDC: "0x5AC5c304F2759F7b5713Ee8326Bc88029458C750",
+  BNB_USD_FEED: "0x8168b5Bc0c5023Ed5fcc4B8Ca036b648f8b39084",
 };
+
+// Owner address for contract control
+const OWNER_ADDRESS = "0xbA..."; // Replace with actual owner address
 
 // Contract ABI (simplified version of the full ABI)
 const PUBLIC_SALE_ABI = [
@@ -41,7 +44,12 @@ const PUBLIC_SALE_ABI = [
   "function tokenPriceUsd6() external view returns (uint256)",
   "function PRESALE_CAP() external view returns (uint256)",
   "function priceStalenessTolerance() external view returns (uint256)",
+  "function startSale() external",
+  "function stopSale() external",
+  "function owner() external view returns (address)",
   "event Purchased(address indexed buyer, uint256 rcxAmount, address paymentToken, uint256 paymentAmount)",
+  "event SaleStarted()",
+  "event SaleStopped()",
 ];
 
 const ERC20_ABI = [
@@ -69,6 +77,7 @@ export const Web3Provider = ({ children }) => {
   const [priceFeed, setPriceFeed] = useState(null);
   const [network, setNetwork] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
 
   // BSC Testnet configuration
   const BSC_TESTNET = {
@@ -171,6 +180,10 @@ export const Web3Provider = ({ children }) => {
       setUsdcContract(usdcContractInstance);
       setPriceFeed(priceFeedContract);
 
+      // Check if connected address is the owner
+      const contractOwner = await publicSaleContract.owner();
+      setIsOwner(contractOwner.toLowerCase() === address.toLowerCase());
+
       toast.success("Wallet connected successfully!");
     } catch (error) {
       console.error("Error connecting wallet:", error);
@@ -190,7 +203,47 @@ export const Web3Provider = ({ children }) => {
     setUsdcContract(null);
     setPriceFeed(null);
     setNetwork(null);
+    setIsOwner(false);
     toast.success("Wallet disconnected");
+  };
+
+  // Owner control functions
+  const startSale = async () => {
+    if (!contract || !isOwner) {
+      toast.error("Only the contract owner can start the sale");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const tx = await contract.startSale();
+      await tx.wait();
+      toast.success("Sale started successfully!");
+    } catch (error) {
+      console.error("Error starting sale:", error);
+      toast.error("Failed to start sale");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const stopSale = async () => {
+    if (!contract || !isOwner) {
+      toast.error("Only the contract owner can stop the sale");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const tx = await contract.stopSale();
+      await tx.wait();
+      toast.success("Sale stopped successfully!");
+    } catch (error) {
+      console.error("Error stopping sale:", error);
+      toast.error("Failed to stop sale");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Listen for account changes
@@ -235,8 +288,11 @@ export const Web3Provider = ({ children }) => {
     priceFeed,
     network,
     loading,
+    isOwner,
     connectWallet,
     disconnectWallet,
+    startSale,
+    stopSale,
     CONTRACT_ADDRESSES,
   };
 
