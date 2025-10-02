@@ -1,9 +1,9 @@
 import React from "react";
-import { Wallet, LogOut } from "lucide-react";
+import { Wallet, LogOut, Settings } from "lucide-react";
 import { useWeb3 } from "../context/Web3Context";
 
-const Header = () => {
-  const { isConnected, account, connectWallet, disconnectWallet, loading } = useWeb3();
+const Header = ({ showAdminView, onToggleAdminView }) => {
+  const { isConnected, account, connectWallet, disconnectWallet, loading, isOwner } = useWeb3();
 
   const formatAddress = (address) => {
     if (!address) return "";
@@ -14,28 +14,42 @@ const Header = () => {
     <header className="header">
       <div className="header-content">
         <div className="logo">RCX Public Sale</div>
-        <div className="wallet-info">
-          {isConnected ? (
-            <>
-              <div className="wallet-address">{formatAddress(account)}</div>
-              <button
-                className="btn btn-secondary"
-                onClick={disconnectWallet}
-              >
-                <LogOut size={16} />
-                Disconnect
-              </button>
-            </>
-          ) : (
+        <div className="header-actions">
+          {/* Admin Toggle Button - Only show for owners */}
+          {isConnected && isOwner && (
             <button
-              className="btn"
-              onClick={connectWallet}
-              disabled={loading}
+              className={`btn ${showAdminView ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={onToggleAdminView}
+              style={{ marginRight: '1rem' }}
             >
-              <Wallet size={16} />
-              {loading ? "Connecting..." : "Connect Wallet"}
+              <Settings size={16} />
+              {showAdminView ? 'Public View' : 'Admin Dashboard'}
             </button>
           )}
+
+          <div className="wallet-info">
+            {isConnected ? (
+              <>
+                <div className="wallet-address">{formatAddress(account)}</div>
+                <button
+                  className="btn btn-secondary"
+                  onClick={disconnectWallet}
+                >
+                  <LogOut size={16} />
+                  Disconnect
+                </button>
+              </>
+            ) : (
+              <button
+                className="btn"
+                onClick={connectWallet}
+                disabled={loading}
+              >
+                <Wallet size={16} />
+                {loading ? "Connecting..." : "Connect Wallet"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>
