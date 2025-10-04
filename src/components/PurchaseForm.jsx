@@ -63,11 +63,14 @@ const PurchaseForm = ({ account }) => {
       // Calculate native cost using USD conversion
       const nativeCost = await contract.usdToNative(usdCost);
 
+      // Convert USD cost from 18 decimals to 6 decimals for USDT/USDC
+      const usdCost6 = usdCost.div(ethers.BigNumber.from(10).pow(12)); // 18-6=12
+
       setCosts({
-        usd: ethers.utils.formatUnits(usdCost, 6),
+        usd: ethers.utils.formatUnits(usdCost, 18),
         native: ethers.utils.formatEther(nativeCost),
-        usdt: ethers.utils.formatUnits(usdCost, 6),
-        usdc: ethers.utils.formatUnits(usdCost, 6),
+        usdt: ethers.utils.formatUnits(usdCost6, 6),
+        usdc: ethers.utils.formatUnits(usdCost6, 6),
       });
     } catch (error) {
       console.error("Error calculating costs:", error);
@@ -138,12 +141,15 @@ const PurchaseForm = ({ account }) => {
       throw new Error("Cannot purchase this amount");
     }
 
+    // Convert USD cost from 18 decimals to 6 decimals for USDT
+    const usdCost6 = usdCost.div(ethers.BigNumber.from(10).pow(12)); // 18-6=12
+
     // Check allowance
     const allowance = await usdtContract.allowance(account, contract.address);
 
-    if (allowance.lt(usdCost)) {
+    if (allowance.lt(usdCost6)) {
       toast.loading("Approving USDT...", { id: "approve" });
-      const approveTx = await usdtContract.approve(contract.address, usdCost);
+      const approveTx = await usdtContract.approve(contract.address, usdCost6);
       await approveTx.wait();
       toast.success("USDT approved!", { id: "approve" });
     }
@@ -165,12 +171,15 @@ const PurchaseForm = ({ account }) => {
       throw new Error("Cannot purchase this amount");
     }
 
+    // Convert USD cost from 18 decimals to 6 decimals for USDC
+    const usdCost6 = usdCost.div(ethers.BigNumber.from(10).pow(12)); // 18-6=12
+
     // Check allowance
     const allowance = await usdcContract.allowance(account, contract.address);
 
-    if (allowance.lt(usdCost)) {
+    if (allowance.lt(usdCost6)) {
       toast.loading("Approving USDC...", { id: "approve" });
-      const approveTx = await usdcContract.approve(contract.address, usdCost);
+      const approveTx = await usdcContract.approve(contract.address, usdCost6);
       await approveTx.wait();
       toast.success("USDC approved!", { id: "approve" });
     }

@@ -16,18 +16,30 @@ import {
   Plus
 } from 'lucide-react';
 import { useWeb3 } from '../context/Web3Context';
+import { ethers } from 'ethers';
 import toast from 'react-hot-toast';
+
+const ERC20_ABI = [
+  "function balanceOf(address owner) external view returns (uint256)",
+  "function allowance(address owner, address spender) external view returns (uint256)",
+  "function approve(address spender, uint256 amount) external returns (bool)",
+  "function decimals() external view returns (uint8)",
+  "function symbol() external view returns (string)",
+  "function name() external view returns (string)",
+];
 
 const PublicSaleAdmin = () => {
   const {
     contract,
+    contractWithSigner,
     usdtContract,
     usdcContract,
     account,
     isOwner,
     loading: web3Loading,
     startSale: web3StartSale,
-    stopSale: web3StopSale
+    stopSale: web3StopSale,
+    checkSaleStatus
   } = useWeb3();
 
   // State for contract data
@@ -66,7 +78,8 @@ const PublicSaleAdmin = () => {
     contractBalances: {
       usdt: '0',
       usdc: '0',
-      native: '0'
+      native: '0',
+      rcx: '0'
     },
     priceStalenessTolerance: '0',
     unclaimedLiability: '0'
@@ -90,10 +103,10 @@ const PublicSaleAdmin = () => {
         ] = await Promise.all([
           contract.saleActive(),
           contract.totalSold(),
-          contract.getCurrentStage().then(stage => stage.stageIndex),
+          contract.getCurrentStage().then(stage => stage.stageIndex), // stageIndex is a property
           contract.getTotalStages(),
           contract.maxPerWallet(),
-          contract.tokenPriceUsd6(),
+          contract.tokenPriceUsd18(),
           contract.tgeTimestamp(),
           contract.totalClaimed()
         ]);
@@ -117,6 +130,13 @@ const PublicSaleAdmin = () => {
 
     fetchContractData();
   }, [contract]);
+
+  // Fetch token balances when contracts are available
+  useEffect(() => {
+    if (contract && usdtContract && usdcContract) {
+      fetchTokenBalances();
+    }
+  }, [contract, usdtContract, usdcContract]);
 
   // Contract interaction functions
   const handleStartSale = async () => {
@@ -177,7 +197,7 @@ const PublicSaleAdmin = () => {
         contract.getCurrentStage().then(stage => stage.stageIndex),
         contract.getTotalStages(),
         contract.maxPerWallet(),
-        contract.tokenPriceUsd6(),
+        contract.tokenPriceUsd18(),
         contract.tgeTimestamp(),
         contract.totalClaimed()
       ]);
@@ -201,6 +221,46 @@ const PublicSaleAdmin = () => {
       toast.error('Failed to refresh data');
     }
     setLoading(false);
+  };
+
+  // Fetch token balances
+  const fetchTokenBalances = async () => {
+    if (!contract || !usdtContract || !usdcContract) return;
+
+    try {
+      // Fetch contract balances
+      const [usdtBalance, usdcBalance, nativeBalance, rcxBalance] = await Promise.all([
+        usdtContract.balanceOf(contract.address),
+        usdcContract.balanceOf(contract.address),
+        contract.provider.getBalance(contract.address),
+        contract.provider.getBalance(contract.address) // This will be BNB balance
+      ]);
+
+      // Get RCX token balance if we can access it
+      let rcxTokenBalance = '0';
+      try {
+        // Try to get RCX token balance from the contract
+        const rcxTokenAddress = await contract.rcx(); // Assuming the contract has this method
+        if (rcxTokenAddress && rcxTokenAddress !== '0x0000000000000000000000000000000000000000') {
+          const rcxContract = new ethers.Contract(rcxTokenAddress, ERC20_ABI, contract.provider);
+          rcxTokenBalance = await rcxContract.balanceOf(contract.address);
+        }
+      } catch (error) {
+        console.log('Could not fetch RCX token balance:', error.message);
+      }
+
+      setDetailedViewData(prev => ({
+        ...prev,
+        contractBalances: {
+          usdt: usdtBalance.toString(),
+          usdc: usdcBalance.toString(),
+          native: nativeBalance.toString(),
+          rcx: rcxTokenBalance.toString()
+        }
+      }));
+    } catch (error) {
+      console.error('Error fetching token balances:', error);
+    }
   };
 
   // Fetch detailed view data
@@ -243,7 +303,8 @@ const PublicSaleAdmin = () => {
         contractBalances: {
           usdt: usdtBalance.toString(),
           usdc: usdcBalance.toString(),
-          native: nativeBalance.toString()
+          native: nativeBalance.toString(),
+          rcx: '0' // Will be updated by fetchTokenBalances
         },
         priceStalenessTolerance: priceStalenessTolerance.toString(),
         unclaimedLiability: unclaimedLiability.toString()
@@ -267,7 +328,7 @@ const PublicSaleAdmin = () => {
 
     setLoading(true);
     try {
-      const tx = await contract.setTokenPriceUsd6(priceInput);
+      const tx = await contract.setTokenPriceUsd18(priceInput);
       await tx.wait();
       toast.success('Token price updated successfully');
       setPriceInput('');
@@ -473,6 +534,24 @@ const PublicSaleAdmin = () => {
     setLoading(false);
   };
 
+  // Helper function to format token balances
+  const formatBalance = (balance, decimals = 18) => {
+    if (!balance || balance === '0') return '0';
+    try {
+      const formatted = ethers.utils.formatUnits(balance, decimals);
+      const num = parseFloat(formatted);
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(2) + 'M';
+      } else if (num >= 1000) {
+        return (num / 1000).toFixed(2) + 'K';
+      } else {
+        return num.toFixed(4);
+      }
+    } catch (error) {
+      return '0';
+    }
+  };
+
   const tabs = [
     { id: 'control', label: 'Sale Control', icon: Play },
     { id: 'settings', label: 'Settings', icon: Settings },
@@ -504,6 +583,45 @@ const PublicSaleAdmin = () => {
           <h1 style={{ color: 'white', marginBottom: '0.5rem' }}>RCX Public Sale Admin Dashboard</h1>
           <p style={{ color: 'rgba(255,255,255,0.8)' }}>Manage your token sale with complete administrative control</p>
 
+          {/* Token Holdings Banner */}
+          <div style={{
+            background: 'rgba(0,0,0,0.2)',
+            padding: '1rem',
+            borderRadius: '8px',
+            marginTop: '1rem',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <div style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.8)', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+              💰 Contract Holdings
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>USDT</div>
+                <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#fbbf24' }}>
+                  {formatBalance(detailedViewData.contractBalances.usdt, 18)}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>USDC</div>
+                <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#3b82f6' }}>
+                  {formatBalance(detailedViewData.contractBalances.usdc, 18)}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>BNB</div>
+                <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#f59e0b' }}>
+                  {formatBalance(detailedViewData.contractBalances.native, 18)}
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>RCX</div>
+                <div style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#10b981' }}>
+                  {formatBalance(detailedViewData.contractBalances.rcx, 18)}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Quick Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
             <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '8px' }}>
@@ -515,7 +633,7 @@ const PublicSaleAdmin = () => {
             <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '8px' }}>
               <div style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>Total Sold</div>
               <div style={{ fontWeight: 'bold', fontSize: '1.125rem', color: 'white' }}>
-                {contractData.totalSold} RCX
+                {formatBalance(contractData.totalSold, 18)} RCX
               </div>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '8px' }}>
@@ -527,7 +645,7 @@ const PublicSaleAdmin = () => {
             <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '8px' }}>
               <div style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>Max Per Wallet</div>
               <div style={{ fontWeight: 'bold', fontSize: '1.125rem', color: 'white' }}>
-                {contractData.maxPerWallet} RCX
+                {formatBalance(contractData.maxPerWallet, 18)} RCX
               </div>
             </div>
           </div>
@@ -555,6 +673,105 @@ const PublicSaleAdmin = () => {
             >
               <RefreshCw size={16} />
               Refresh
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={fetchTokenBalances}
+              disabled={loading || web3Loading}
+              style={{ marginBottom: '0.5rem', backgroundColor: '#059669', color: 'white' }}
+            >
+              <Coins size={16} />
+              Refresh Balances
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={async () => {
+                console.log("=== DEBUG SALE STATUS ===");
+                const result = await checkSaleStatus();
+                console.log("Debug result:", result);
+                toast.success(`Sale Status: ${result?.saleActive ? 'ACTIVE' : 'INACTIVE'} | Paused: ${result?.paused ? 'YES' : 'NO'}`);
+              }}
+              disabled={loading || web3Loading}
+              style={{ marginBottom: '0.5rem', backgroundColor: '#f59e0b', color: 'white' }}
+            >
+              🔍 Debug Sale Status
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={async () => {
+                console.log("=== DIRECT RPC CALL ===");
+                try {
+                  // Direct RPC call to BSC
+                  const rpcUrl = "https://bsc-dataseed1.binance.org/";
+                  const contractAddress = "0x25bb13b3bF10e5518A82896d0e7Ef889806e6CC8";
+
+                  // Function selector for saleActive() - first 4 bytes of keccak256("saleActive()")
+                  // This is the correct function selector: 0x3c7b3c6b
+                  const data = "0x3c7b3c6b";
+
+                  console.log("Making direct RPC call...");
+                  const response = await fetch(rpcUrl, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      jsonrpc: '2.0',
+                      method: 'eth_call',
+                      params: [{
+                        to: contractAddress,
+                        data: data
+                      }, 'latest'],
+                      id: 1
+                    })
+                  });
+
+                  const result = await response.json();
+                  console.log("RPC response:", result);
+
+                  if (result.result) {
+                    // Convert hex result to boolean
+                    const saleActive = result.result === "0x0000000000000000000000000000000000000000000000000000000000000001";
+                    console.log("Sale active:", saleActive);
+                    toast.success(`Sale Status: ${saleActive ? 'ACTIVE' : 'INACTIVE'}`);
+                  } else {
+                    console.error("RPC error:", result.error);
+                    toast.error(`RPC Error: ${result.error?.message || 'Unknown error'}`);
+                  }
+                } catch (error) {
+                  console.error("Direct RPC call failed:", error);
+                  toast.error(`Error: ${error.message}`);
+                }
+              }}
+              disabled={loading || web3Loading}
+              style={{ marginBottom: '0.5rem', backgroundColor: '#10b981', color: 'white' }}
+            >
+              🌐 Direct RPC Check
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={async () => {
+                console.log("=== TESTING NEW CONTRACT SETUP ===");
+                try {
+                  console.log("Contract (read-only):", contract);
+                  console.log("Contract with signer:", contractWithSigner);
+
+                  if (contract) {
+                    const saleActive = await contract.saleActive();
+                    console.log("Sale active (read-only):", saleActive);
+                    toast.success(`Sale Status: ${saleActive ? 'ACTIVE' : 'INACTIVE'} (Read-only)`);
+                  } else {
+                    toast.error("No read-only contract available");
+                  }
+                } catch (error) {
+                  console.error("Test failed:", error);
+                  toast.error(`Error: ${error.message}`);
+                }
+              }}
+              disabled={loading || web3Loading || !contract}
+              style={{ marginBottom: '0.5rem', backgroundColor: '#8b5cf6', color: 'white' }}
+            >
+              🧪 Test New Setup
             </button>
           </div>
         </div>
