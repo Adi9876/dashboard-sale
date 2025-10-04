@@ -16,7 +16,7 @@ const DebugInfo = () => {
                     presaleCap,
                     maxPerWallet,
                     tgeTimestamp,
-                    tokenPriceUsd6,
+                    tokenPriceUsd18,
                     totalStages,
                     currentStage
                 ] = await Promise.all([
@@ -25,7 +25,7 @@ const DebugInfo = () => {
                     contract.PRESALE_CAP().catch(() => "0"),
                     contract.maxPerWallet().catch(() => "0"),
                     contract.tgeTimestamp().catch(() => "0"),
-                    contract.tokenPriceUsd6().catch(() => "0"),
+                    contract.tokenPriceUsd18().catch(() => "0"),
                     contract.getTotalStages().catch(() => "0"),
                     contract.getCurrentStage().catch(() => [0, 0, 0, 0, 0])
                 ]);
@@ -36,7 +36,7 @@ const DebugInfo = () => {
                     presaleCap: presaleCap.toString(),
                     maxPerWallet: maxPerWallet.toString(),
                     tgeTimestamp: tgeTimestamp.toString(),
-                    tokenPriceUsd6: tokenPriceUsd6.toString(),
+                    tokenPriceUsd18: tokenPriceUsd18.toString(),
                     totalStages: totalStages.toString(),
                     currentStage: currentStage.map(s => s.toString())
                 });

@@ -21,7 +21,7 @@ const StageInfo = () => {
 
         setCurrentStage({
           stageIndex: stageData[0].toString(),
-          priceUsd6: stageData[1].toString(),
+          priceUsd18: stageData[1].toString(),
           tokenAllocation: stageData[2].toString(),
           tokensSold: stageData[3].toString(),
           tokensRemaining: stageData[4].toString(),
@@ -45,8 +45,8 @@ const StageInfo = () => {
     });
   };
 
-  const formatPrice = (priceUsd6) => {
-    const price = parseFloat(priceUsd6) / 1000000; // Convert from 6 decimals
+  const formatPrice = (priceUsd18) => {
+    const price = parseFloat(priceUsd18) / 1000000000000000000; // Convert from 18 decimals
     return `$${price.toFixed(6)}`;
   };
 
@@ -84,7 +84,7 @@ const StageInfo = () => {
             Stage {parseInt(currentStage.stageIndex) + 1} of {totalStages}
           </h4>
           <div className="stage-price">
-            {formatPrice(currentStage.priceUsd6)} per RCX
+            {formatPrice(currentStage.priceUsd18)} per RCX
           </div>
         </div>
 

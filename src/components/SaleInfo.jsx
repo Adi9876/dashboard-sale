@@ -11,7 +11,7 @@ const SaleInfo = () => {
     presaleCap: "0",
     maxPerWallet: "0",
     tgeTimestamp: "0",
-    priceUsd6: "0",
+    priceUsd18: "0",
   });
   const [loading, setLoading] = useState(true);
 
@@ -27,14 +27,14 @@ const SaleInfo = () => {
           presaleCap,
           maxPerWallet,
           tgeTimestamp,
-          priceUsd6,
+          priceUsd18,
         ] = await Promise.all([
           contract.saleActive(),
           contract.totalSold(),
           contract.PRESALE_CAP(),
           contract.maxPerWallet(),
           contract.tgeTimestamp(),
-          contract.tokenPriceUsd6(),
+          contract.tokenPriceUsd18(),
         ]);
 
         setSaleData({
@@ -43,7 +43,7 @@ const SaleInfo = () => {
           presaleCap: ethers.utils.formatEther(presaleCap),
           maxPerWallet: ethers.utils.formatEther(maxPerWallet),
           tgeTimestamp: tgeTimestamp.toString(),
-          priceUsd6: priceUsd6.toString(),
+          priceUsd18: priceUsd18.toString(),
         });
       } catch (error) {
         console.error("Error fetching sale data:", error);
@@ -62,8 +62,8 @@ const SaleInfo = () => {
     });
   };
 
-  const formatPrice = (priceUsd6) => {
-    const price = parseFloat(priceUsd6) / 1000000; // Convert from 6 decimals
+  const formatPrice = (priceUsd18) => {
+    const price = parseFloat(priceUsd18) / 1000000000000000000; // Convert from 18 decimals
     return `$${price.toFixed(6)}`;
   };
 
@@ -111,7 +111,7 @@ const SaleInfo = () => {
           <div className="stat-label">Max per Wallet</div>
         </div>
         <div className="stat-item">
-          <div className="stat-value">{formatPrice(saleData.priceUsd6)}</div>
+          <div className="stat-value">{formatPrice(saleData.priceUsd18)}</div>
           <div className="stat-label">RCX Price</div>
         </div>
       </div>
